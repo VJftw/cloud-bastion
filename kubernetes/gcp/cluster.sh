@@ -55,11 +55,11 @@ function ensureCluster {
 
 function cleanupCluster {
     if gcloud container clusters describe "${cluster_name}" \
-        --project "$project" &> /dev/null; then
+        --project "$project" --zone "$zone" &> /dev/null; then
         util::info "deleting GKE cluster ${cluster_name}"
 
         util::debug gcloud container clusters delete "${cluster_name}" \
-            --project "$project"
+            --project "$project" --zone "$zone"
     fi
 
     util::success "GKE cluster ${cluster_name} deleted"
