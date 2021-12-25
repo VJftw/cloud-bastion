@@ -1,0 +1,17 @@
+def sh_script(
+    name: str,
+    main: str,
+    deps: list = [],
+    visibility: list = [],
+):
+    # replace please references in main with out paths
+    replace_cmds = [f"sed -i 's#{dep}#$(out_location {dep})#g' $OUTS" for dep in deps]
+    return genrule(
+        name = name,
+        srcs = [main],
+        deps = deps,
+        outs = [f"built_{main}"],
+        cmd = "cp $SRCS $OUTS\n" + "\n".join(replace_cmds),
+        visibility = visibility,
+        binary = True,
+    )
