@@ -5,7 +5,7 @@ set -Eeuo pipefail
 WAITFORIT="//third_party/sh:waitforit"
 source "//build/util:util"
 
-project="vjftw-main"
+project="vjftw-bastion-demo"
 zone="europe-west1-b"
 instance_name="bastion-tunnel"
 network="default"
@@ -34,6 +34,7 @@ function ensureTunnel {
 
     util::info "creating socks tunnel over SSH on ${socks_address}"
     util::debug gcloud --verbosity=info compute ssh \
+        --project="$project" \
         --tunnel-through-iap \
         --zone "${zone}" \
         "${instance_name}" \
@@ -95,14 +96,16 @@ function cleanupBastion {
 }
 
 function ensureKubeConfig {
+    rm -f "${cluster_kubeconfig}"
     export KUBECONFIG="$cluster_kubeconfig"
     gcloud container clusters get-credentials \
         "$cluster_name" \
+        --project="$project" \
         --internal-ip \
         --zone "$zone"
 
     # enable proxy
-    kubectl config set "clusters[0].cluster.proxy-url" "http://localhost:5000"
+    kubectl config set "clusters.gke_${project}_${zone}_${cluster_name}.proxy-url" "socks5://localhost:5000"
 }
 
 function cleanupKubeconfig {

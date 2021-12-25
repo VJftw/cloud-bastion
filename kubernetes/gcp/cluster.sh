@@ -3,7 +3,7 @@
 source "//build/util:util"
 
 cluster_name="bastion-demo"
-project="vjftw-main"
+project="vjftw-bastion-demo"
 network="default"
 zone="europe-west1-b"
 
