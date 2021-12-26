@@ -7,8 +7,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
       - uses: actions/checkout@v2
+
+      - id: 'gcp-auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: 'projects/833031146739/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: 'gha-vjftw-bastion@vjftw-main.iam.gserviceaccount.com'
 
       # ensure
       ## TODO: use Terraform instead
