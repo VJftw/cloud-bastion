@@ -25,7 +25,7 @@ function setupKubeConfigs {
 
 
 function testGetNamespaces {
-    "$KUBECTL" --context "gke_${project}_${zone}_${cluster_name}" get namespaces
+    util::debug "$KUBECTL" --context "gke_${project}_${zone}_${cluster_name}" get namespaces
 }
 
 setupKubeConfigs
