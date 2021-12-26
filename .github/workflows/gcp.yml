@@ -31,6 +31,8 @@ jobs:
       
       # cleanup
       - run: ./pleasew run //socks/gcp:bastion -- cleanup
+        if: always()
       ## TODO: use Terraform instead
       - run: ./pleasew run //kubernetes/gcp:cluster -- cleanup
+        if: always()
       
