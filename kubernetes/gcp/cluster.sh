@@ -10,7 +10,7 @@ zone="europe-west1-b"
 function ensureCluster {
 
     if ! gcloud container clusters describe "${cluster_name}" \
-        --project "$project" &> /dev/null; then 
+        --project "$project" --zone="$zone" &> /dev/null; then 
         
         util::info "creating GKE cluster ${cluster_name}"
 
@@ -58,7 +58,7 @@ function cleanupCluster {
         --project "$project" --zone "$zone" &> /dev/null; then
         util::info "deleting GKE cluster ${cluster_name}"
 
-        util::debug gcloud container clusters delete "${cluster_name}" \
+        util::debug gcloud container clusters delete --quiet "${cluster_name}" \
             --project "$project" --zone "$zone"
     fi
 
