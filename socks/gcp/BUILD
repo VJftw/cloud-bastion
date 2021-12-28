@@ -4,7 +4,7 @@ sh_script(
     name = "bastion",
     main = "bastion.sh",
     deps = [
-        "//build/util:util",
+        "//build/util",
         "//third_party/sh:waitforit",
     ],
 )
