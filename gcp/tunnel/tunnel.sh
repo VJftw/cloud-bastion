@@ -70,7 +70,9 @@ function ensureKubeConfig {
 }
 
 function cleanupKubeconfig {
-    local cluster_name="$1"
+    local project="$1"
+    local region="$2"
+    local cluster_name="$3"
 
     cluster_kubeconfig="${HOME}/.kube/configs/${project}-${region}-${cluster_name}.yaml"
     
@@ -80,8 +82,8 @@ function cleanupKubeconfig {
 
 function ensure {
     project="$(./pleasew run //gcp/project:project -- "terraform init && terraform output -raw project_id" | tail -n1)"
-    cluster_name="$(./pleasew run //gcp:gcp -- "terraform output -raw cluster_name" | tail -n1)"
     region="$(./pleasew run //gcp:gcp -- "terraform output -raw region" | tail -n1)"
+    cluster_name="$(./pleasew run //gcp:gcp -- "terraform output -raw cluster_name" | tail -n1)"
     
     util::info "tunneling to '$cluster_name' in '$region' in '$project'"
 
@@ -95,9 +97,11 @@ function ensure {
 }
 
 function cleanup {
-    cluster_name="$(./pleasew run //gcp:gcp -- "terraform init && terraform output -raw cluster_name" | tail -n1)"
+    project="$(./pleasew run //gcp/project:project -- "terraform init && terraform output -raw project_id" | tail -n1)"
+    region="$(./pleasew run //gcp:gcp -- "terraform output -raw region" | tail -n1)"
+    cluster_name="$(./pleasew run //gcp:gcp -- "terraform output -raw cluster_name" | tail -n1)"
 
-    cleanupKubeconfig "$cluster_name"
+    cleanupKubeconfig "$project" "$region" "$cluster_name"
 
     cleanupTunnel
 }
