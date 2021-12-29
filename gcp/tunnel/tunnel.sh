@@ -21,11 +21,10 @@ function cleanupTunnel {
 
 function ensureTunnel {
     local project="$1"
-    export CLOUDSDK_CORE_PROJECT="$project"
     cleanupTunnel
     
     util::info "Looking for bastion instances" 
-    bastions=($(gcloud compute instances list --filter='tags.items~^bastion$' --format="csv(name, zone)" | tail -n+2))
+    bastions=($(gcloud compute instances list --project "$project" --filter='tags.items~^bastion$' --format="csv(name, zone)" | tail -n+2))
 
     bastion="${bastions[0]}"
     bastion_name="$(echo "$bastion" | cut -f1 -d,)"
@@ -34,6 +33,7 @@ function ensureTunnel {
     util::info "creating socks tunnel over SSH on ${socks_address} to ${bastion_name}"
     util::debug gcloud --verbosity=info compute ssh \
         --tunnel-through-iap \
+        --project "${project}" \
         --zone "${bastion_zone}" \
         "${bastion_name}" \
         -- -N -p 22 -D "${socks_address}" &> "${log_file}" &
@@ -50,7 +50,6 @@ function ensureKubeConfig {
     local project="$1"
     local region="$2"
     local cluster_name="$3"
-    export CLOUDSDK_CORE_PROJECT="$project"
 
     cluster_kubeconfig="${HOME}/.kube/configs/${cluster_name}.yaml"
 
@@ -59,6 +58,7 @@ function ensureKubeConfig {
     gcloud container clusters get-credentials \
         "$cluster_name" \
         --internal-ip \
+        --project "${project}"
         --region "${region}"
 
     # enable proxy
