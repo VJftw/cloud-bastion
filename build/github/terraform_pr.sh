@@ -32,7 +32,7 @@ esac
 
 ./pleasew run -p "$please_target" -- "
 terraform init -lock=true -lock-timeout=30s && \
-(terraform workspace list | cut -f2 -d' ' | grep -w "$workspace_name" || terraform workspace new "$workspace_name") && \
+(terraform workspace list | sed 's/*/ /' | awk '{print \$1}' | grep -w "^$workspace_name$" || terraform workspace new "$workspace_name") && \
 terraform workspace select "$workspace_name" && \
 ${terraform_cmd}
 "
