@@ -55,6 +55,8 @@ util::retry() {
   if "${@}"; then
     return
   fi
+  
+  util::error "could not execute: ${*}"
 
   return 1
 }

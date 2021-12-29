@@ -3,25 +3,18 @@ set -Eeuo pipefail
 
 source "//build/util"
 
-socks_address="localhost:5000"
-
-pid_file="${HOME}/.bastion_pid"
-log_file="${HOME}/.bastion.log"
-
-function cleanupTunnel {
-    if [ -f "$pid_file" ]; then
-        existing_pid="$(<$pid_file)"
-        util::info "killing existing tunnel (PID: $existing_pid)"
-        pkill -P "$existing_pid" || true
-        rm "$pid_file"
-    fi
-
-    util::success "socks tunnel killed"
-}
+socks_address="localhost:1080"
+pid_file="${HOME}/.local/run/tunnel-socks.pid"
 
 function ensureTunnel {
     local project="$1"
-    cleanupTunnel
+
+    log_file="${HOME}/.local/log/tunnel-${project}.log"
+
+    mkdir -p "$(dirname "$pid_file")"
+    mkdir -p "$(dirname "$log_file")"
+
+    cleanupTunnel "$project"
     
     util::info "Looking for bastion instances" 
     bastions=($(gcloud compute instances list --project "$project" --filter='tags.items~^bastion$' --format="csv(name, zone)" | tail -n+2))
@@ -46,6 +39,17 @@ function ensureTunnel {
     "//third_party/sh:waitforit" --strict --timeout=30 "${socks_address}"
 }
 
+function cleanupTunnel {
+    if [ -f "$pid_file" ]; then
+        existing_pid="$(<$pid_file)"
+        util::info "killing existing tunnel (PID: $existing_pid)"
+        pkill -P "$existing_pid" || true
+        rm "$pid_file"
+    fi
+
+    util::success "socks tunnel killed"
+}
+
 function ensureKubeConfig {
     local project="$1"
     local region="$2"
@@ -61,7 +65,7 @@ function ensureKubeConfig {
         --project "${project}" \
         --region "${region}"
 
-    # enable proxy
+    # use socks proxy tunnel
     kubectl config set "clusters.gke_${project}_${region}_${cluster_name}.proxy-url" "socks5://$socks_address"
 }
 
@@ -74,6 +78,21 @@ function cleanupKubeconfig {
     util::success "kubeconfig ${cluster_kubeconfig} deleted"
 }
 
+function ensure {
+    project="$(./pleasew run //gcp/project:project -- "terraform init && terraform output -raw project_id" | tail -n1)"
+    cluster_name="$(./pleasew run //gcp:gcp -- "terraform output -raw cluster_name" | tail -n1)"
+    region="$(./pleasew run //gcp:gcp -- "terraform output -raw region" | tail -n1)"
+    
+    util::info "tunneling to '$cluster_name' in '$region' in '$project'"
+
+    if ! util::retry ensureTunnel "$project"; then
+        util::error "could not establish tunnel, logs below:"
+        cat "$log_file"
+        exit 1
+    fi
+
+    ensureKubeConfig "$project" "$region" "$cluster_name"
+}
 
 function cleanup {
     cluster_name="$(./pleasew run //gcp:gcp -- "terraform init && terraform output -raw cluster_name" | tail -n1)"
@@ -83,25 +102,12 @@ function cleanup {
     cleanupTunnel
 }
 
-function ensure {
-    project="$(./pleasew run //gcp/project:project -- "terraform init && terraform output -raw project_id" | tail -n1)"
-    cluster_name="$(./pleasew run //gcp:gcp -- "terraform output -raw cluster_name" | tail -n1)"
-    region="$(./pleasew run //gcp:gcp -- "terraform output -raw region" | tail -n1)"
-    util::info "tunneling to '$cluster_name' in '$region' in '$project'"
-
-    if ! util::retry ensureTunnel "$project"; then
-        cat "$log_file"
-    fi
-
-    ensureKubeConfig "$project" "$region" "$cluster_name"
-}
-
 case "${1:-}" in
-    "cleanup")
-    cleanup
-    ;;
     "ensure")
     ensure
+    ;;
+    "cleanup")
+    cleanup
     ;;
     *)
     util::error "unknown command"
