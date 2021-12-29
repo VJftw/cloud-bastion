@@ -42,7 +42,19 @@ util::rsuccess() {
 }
 
 util::retry() {
-  "${@}" || sleep 1; "${@}" || sleep 5; "${@}"
+  if "${@}"; then
+    return
+  fi
+  
+  sleep 1
+  if "${@}"; then
+    return
+  fi
+
+  sleep 5
+  if "${@}"; then
+    return
+  fi
 }
 
 util::prompt() {

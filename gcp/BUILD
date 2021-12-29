@@ -8,6 +8,7 @@ terraform_root(
         "nat.tf",
         "vpc.tf",
         "gke.tf",
+        "outputs.tf",
     ],
     modules = [
         "///third_party/terraform/org-infra//modules/account/gcp:gcp",
