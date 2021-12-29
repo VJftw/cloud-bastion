@@ -8,6 +8,7 @@ pid_file="${HOME}/.local/run/tunnel-socks.pid"
 
 function ensureTunnel {
     local project="$1"
+    local network_name="$2"
 
     log_file="${HOME}/.local/log/tunnel-${project}.log"
 
@@ -16,8 +17,13 @@ function ensureTunnel {
 
     cleanupTunnel "$project"
     
-    util::info "Looking for bastion instances" 
-    bastions=($(gcloud compute instances list --project "$project" --filter='tags.items~^bastion$' --format="csv(name, zone)" | tail -n+2))
+    util::info "Looking for bastion instances"
+    # TODO: filter by network_name
+    bastions=($(gcloud compute instances list --project "$project" --filter="(tags.items~^bastion\$ AND networkInterfaces.network~/$network_name\$)" --format="csv(name, zone)" | tail -n+2))
+    if [ ${#bastions[@]} -eq 0 ]; then
+        util::error "no bastions found"
+        exit 1
+    fi
 
     bastion="${bastions[0]}"
     bastion_name="$(echo "$bastion" | cut -f1 -d,)"
@@ -83,11 +89,12 @@ function cleanupKubeconfig {
 function ensure {
     project="$(./pleasew run //gcp/project:project -- "terraform init && terraform output -raw project_id" | tail -n1)"
     region="$(./pleasew run //gcp:gcp -- "terraform output -raw region" | tail -n1)"
+    network_name="$(./pleasew run //gcp:gcp -- "terraform output -raw network_name" | tail -n1)"
     cluster_name="$(./pleasew run //gcp:gcp -- "terraform output -raw cluster_name" | tail -n1)"
     
     util::info "tunneling to '$cluster_name' in '$region' in '$project'"
 
-    if ! util::retry ensureTunnel "$project"; then
+    if ! util::retry ensureTunnel "$project" "$network_name"; then
         util::error "could not establish tunnel, logs below:"
         cat "$log_file"
         exit 1

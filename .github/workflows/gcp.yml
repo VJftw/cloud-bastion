@@ -12,19 +12,31 @@ on:
   workflow_dispatch:
 
 jobs:
+  current_pr:
+    if: github.event_name == 'pull_request'
+    name: "Find Current PR"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      pull-requests: 'read'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+    outputs:
+      pr: ${{ steps.findPr.outputs.pr }}
+
   gcp_test:
     if: github.event_name == 'pull_request'
-    name: "GCP"
+    name: "GCP E2E"
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
-      pull-requests: 'read'
+    needs: current_pr
+    concurrency: pr-${{ needs.current_pr.outputs.pr }}
     steps:
       - uses: actions/checkout@v2
-
-      - uses: jwalton/gh-find-current-pr@v1
-        id: findPr
 
       - id: 'gcp-auth'
         name: 'Authenticate to Google Cloud'
@@ -35,9 +47,9 @@ jobs:
           service_account: 'gha-pr-vjftw-bastion@vjp-github-actions.iam.gserviceaccount.com'
 
       - name: Create infrastructure
-        if: success() && steps.findPr.outputs.number
+        if: success() && needs.current_pr.outputs.pr
         env:
-          PR: ${{ steps.findPr.outputs.pr }}
+          PR: ${{ needs.current_pr.outputs.pr }}
         run: |-
           ./pleasew run //build/github:terraform_pr -- "apply" "pr" "//gcp/project:project"
           ./pleasew run //build/github:terraform_pr -- "apply" "pr-${PR}" "//gcp:gcp"
@@ -58,9 +70,9 @@ jobs:
         run: ./pleasew run //gcp/tunnel:tunnel -- cleanup
 
       - name: Destroy infrastructure
-        if: success() && steps.findPr.outputs.number
+        if: success() && needs.current_pr.outputs.pr
         env:
-          PR: ${{ steps.findPr.outputs.pr }}
+          PR: ${{ needs.current_pr.outputs.pr }}
         run: ./pleasew run //build/github:terraform_pr -- "destroy" "pr-${PR}" "//gcp:gcp"
       
   gcp_main:
@@ -70,6 +82,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
+    concurrency: main
     steps:
       - uses: actions/checkout@v2
 
