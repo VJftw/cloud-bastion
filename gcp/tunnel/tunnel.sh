@@ -55,7 +55,7 @@ function ensureKubeConfig {
     local region="$2"
     local cluster_name="$3"
 
-    cluster_kubeconfig="${HOME}/.kube/configs/${cluster_name}.yaml"
+    cluster_kubeconfig="${HOME}/.kube/configs/${project}-${region}-${cluster_name}.yaml"
 
     rm -f "${cluster_kubeconfig}"
     export KUBECONFIG="$cluster_kubeconfig"
@@ -72,7 +72,7 @@ function ensureKubeConfig {
 function cleanupKubeconfig {
     local cluster_name="$1"
 
-    cluster_kubeconfig="${HOME}/.kube/configs/${cluster_name}.yaml"
+    cluster_kubeconfig="${HOME}/.kube/configs/${project}-${region}-${cluster_name}.yaml"
     
     rm -f "$cluster_kubeconfig"
     util::success "kubeconfig ${cluster_kubeconfig} deleted"
