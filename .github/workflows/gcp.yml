@@ -29,6 +29,9 @@ jobs:
       - name: Create infrastructure
         run: ./pleasew run ///third_party/terraform/org-infra//build/github:terraform_apply -- "//gcp:gcp"
 
+      - name: Debug Identity
+        run: gcloud auth print-identity-token | ./pleasew run //third_party/binary:jwt -- decode -
+        
       - name: Create Tunnel
         run: ./pleasew run //gcp/tunnel:tunnel -- ensure
 

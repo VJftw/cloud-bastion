@@ -13,3 +13,10 @@ remote_file(
     url = f"https://github.com/davrodpin/mole/releases/download/v2.0.0/mole2.0.0.linux-amd64.tar.gz",
     extract = True,
 )
+
+remote_file(
+    name = "jwt",
+    binary = True,
+    url = "https://github.com/mike-engel/jwt-cli/releases/download/5.0.0/jwt-linux.tar.gz",
+    extract = True,
+)
