@@ -44,7 +44,7 @@ jobs:
         with:
           create_credentials_file: true
           workload_identity_provider: 'projects/76410834219/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: 'gha-pr-vjftw-bastion@vjp-github-actions.iam.gserviceaccount.com'
+          service_account: 'gha-pr-vjftw-cloud-bastion@vjp-github-actions.iam.gserviceaccount.com'
 
       - name: Create infrastructure
         if: success() && needs.current_pr.outputs.pr
@@ -92,7 +92,7 @@ jobs:
         with:
           create_credentials_file: true
           workload_identity_provider: 'projects/76410834219/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
-          service_account: 'gha-vjftw-bastion@vjp-github-actions.iam.gserviceaccount.com'
+          service_account: 'gha-vjftw-cloud-bastion@vjp-github-actions.iam.gserviceaccount.com'
 
       - name: Create infrastructure
         if: success()
