@@ -1,5 +1,5 @@
 resource "google_compute_instance_template" "bastion" {
-  project = module.project.project_id
+  project = local.project_id
 
   name_prefix        = "bastion"
   description = "This template is used to create bastion instances."
@@ -37,7 +37,7 @@ resource "google_compute_instance_template" "bastion" {
 }
 
 resource "google_compute_firewall" "bastion_iap_ssh" {
-  project = module.project.project_id
+  project = local.project_id
 
   name    = "bastion-allow-ssh-over-iap"
   network = google_compute_network.main.name
@@ -52,7 +52,7 @@ resource "google_compute_firewall" "bastion_iap_ssh" {
 }
 
 resource "google_compute_target_pool" "bastion" {
-  project = module.project.project_id
+  project = local.project_id
 
   name = "bastion"
 
@@ -60,7 +60,7 @@ resource "google_compute_target_pool" "bastion" {
 }
 
 resource "google_compute_region_instance_group_manager" "bastion" {
-  project = module.project.project_id
+  project = local.project_id
 
   name = "bastion"
 
@@ -81,7 +81,7 @@ resource "google_compute_region_instance_group_manager" "bastion" {
 }
 
 resource "google_compute_health_check" "bastion" {
-  project = module.project.project_id
+  project = local.project_id
 
   name = "bastion"
 
@@ -96,7 +96,7 @@ resource "google_compute_health_check" "bastion" {
 }
 
 resource "google_compute_firewall" "bastion_healthcheck" {
-  project = module.project.project_id
+  project = local.project_id
 
   name    = "bastion-allow-healthcheck"
   network = google_compute_network.main.name

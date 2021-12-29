@@ -38,7 +38,9 @@ jobs:
         if: success() && steps.findPr.outputs.number
         env:
           PR: ${{ steps.findPr.outputs.pr }}
-        run: ./pleasew run //build/github:terraform_pr -- "apply" "pr-${PR}" "//gcp:gcp"
+        run: |-
+          ./pleasew run //build/github:terraform_pr -- "apply" "pr-${PR}" "//gcp/project:project"
+          ./pleasew run //build/github:terraform_pr -- "apply" "pr-${PR}" "//gcp:gcp"
 
       - name: Create Tunnel
         run: |-
@@ -81,7 +83,9 @@ jobs:
 
       - name: Create infrastructure
         if: success()
-        run: ./pleasew run //build/github:terraform_pr -- "apply" "default" "//gcp:gcp"
+        run: |-
+          ./pleasew run //build/github:terraform_pr -- "apply" "default" "//gcp/project:project"
+          ./pleasew run //build/github:terraform_pr -- "apply" "default" "//gcp:gcp"
 
       - name: Create Tunnel
         run: |-

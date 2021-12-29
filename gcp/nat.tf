@@ -1,5 +1,5 @@
 resource "google_compute_router" "internet" {
-  project = module.project.project_id
+  project = local.project_id
 
   name    = "internet"
   region  = google_compute_subnetwork.subnetwork["public"].region
@@ -11,7 +11,7 @@ resource "google_compute_router" "internet" {
 }
 
 resource "google_compute_router_nat" "internet" {
-  project = module.project.project_id
+  project = local.project_id
 
   name                   = "internet"
   router                 = google_compute_router.internet.name
@@ -26,7 +26,7 @@ resource "google_compute_router_nat" "internet" {
 }
 
 resource "google_compute_route" "internet" {
-  project = module.project.project_id
+  project = local.project_id
 
   name = "internet"
   network = google_compute_network.main.id
@@ -36,7 +36,7 @@ resource "google_compute_route" "internet" {
 }
 
 resource "google_compute_firewall" "nat_allow_internet_egress" {
-  project = module.project.project_id
+  project = local.project_id
 
   name      = "nat-allow-internet-egress"
   network   = google_compute_network.main.name

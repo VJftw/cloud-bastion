@@ -1,5 +1,5 @@
 resource "google_project_service" "container" {
-  project = module.project.project_id
+  project = local.project_id
 
   service = "container.googleapis.com"
 
@@ -12,7 +12,7 @@ resource "google_project_service" "container" {
 }
 
 resource "google_container_cluster" "primary" {
-  project = module.project.project_id
+  project = local.project_id
 
   name     = "primary"
   location = local.region
@@ -72,7 +72,7 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_compute_firewall" "gke_allow_egress_to_master" {
-  project = module.project.project_id
+  project = local.project_id
 
   name    = "gke-allow-egress-to-master"
   network = google_compute_network.main.name
@@ -88,14 +88,14 @@ resource "google_compute_firewall" "gke_allow_egress_to_master" {
 
 
 resource "google_service_account" "primary" {
-  project = module.project.project_id
+  project = local.project_id
 
   account_id   = "primary-nodes"
   display_name = "primary nodes in ${google_container_cluster.primary.name}"
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
-  project = module.project.project_id
+  project = local.project_id
 
   name       = "primary"
   location   = local.region

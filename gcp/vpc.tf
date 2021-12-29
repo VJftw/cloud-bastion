@@ -1,5 +1,5 @@
 resource "google_compute_network" "main" {
-  project = module.project.project_id
+  project = local.project_id
 
   name                            = "main"
   auto_create_subnetworks         = false
@@ -24,7 +24,7 @@ locals {
 resource "google_compute_subnetwork" "subnetwork" {
   for_each = local.subnetworks
 
-  project = module.project.project_id
+  project = local.project_id
 
   name          = each.key
   ip_cidr_range = each.value["cidr_block"]
@@ -35,7 +35,7 @@ resource "google_compute_subnetwork" "subnetwork" {
 }
 
 resource "google_compute_firewall" "default_deny_egress" {
-  project = module.project.project_id
+  project = local.project_id
 
   name      = "default-deny-egress"
   network   = google_compute_network.main.name
@@ -51,7 +51,7 @@ resource "google_compute_firewall" "default_deny_egress" {
 }
 
 resource "google_compute_firewall" "default_deny_ingress" {
-  project = module.project.project_id
+  project = local.project_id
 
   name      = "default-deny-ingress"
   network   = google_compute_network.main.name
@@ -74,7 +74,7 @@ resource "google_compute_firewall" "default_deny_ingress" {
 #     ]
 #   ]))
 
-#   project = module.project.project_id
+#   project = local.project_id
 
 #   network = google_compute_network.main.name
 

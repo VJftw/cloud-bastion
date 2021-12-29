@@ -23,7 +23,7 @@ case "$command" in
         terraform_cmd="terraform apply -refresh=true -compact-warnings -lock=true -lock-timeout=30s -auto-approve"
     ;;
     "destroy")
-        terraform_cmd="terraform apply -destroy -refresh=true -compact-warnings -lock=true -lock-timeout=30s -auto-approve && terraform workspace delete "${workspace_name}""
+        terraform_cmd="terraform apply -destroy -refresh=true -compact-warnings -lock=true -lock-timeout=30s -auto-approve && terraform workspace select default && terraform workspace delete "${workspace_name}""
     ;;
     *)
     usage
