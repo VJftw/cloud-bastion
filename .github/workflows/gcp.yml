@@ -1,6 +1,9 @@
 name: E2E
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -58,3 +61,43 @@ jobs:
           PR: ${{ steps.findPr.outputs.pr }}
         run: ./pleasew run //build/github:terraform_pr -- "destroy" "pr-${PR}" "//gcp:gcp"
       
+  gcp_main:
+    if: github.ref == 'refs/heads/main'
+    name: "GCP"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - uses: actions/checkout@v2
+
+      - id: 'gcp-auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          create_credentials_file: true
+          workload_identity_provider: 'projects/76410834219/locations/global/workloadIdentityPools/github-actions/providers/github-actions'
+          service_account: 'gha-vjftw-bastion@vjp-github-actions.iam.gserviceaccount.com'
+
+      - name: Create infrastructure
+        if: success()
+        run: ./pleasew run //build/github:terraform_pr -- "apply" "default" "//gcp:gcp"
+
+      - name: Create Tunnel
+        run: |-
+          # This is needed for the gcloud compute ssh command to determine the user identity.
+          gcloud auth login --brief --cred-file="${{ steps.gcp-auth.outputs.credentials_file_path }}"
+
+          ./pleasew run //gcp/tunnel:tunnel -- ensure
+
+      - name: Test kubectl
+        run: ./pleasew run //gcp/tunnel:test
+
+      # cleanup
+      - name: Cleanup Tunnel
+        if: always()
+        run: ./pleasew run //gcp/tunnel:tunnel -- cleanup
+
+      - name: Destroy infrastructure
+        if: success()
+        run: ./pleasew run //build/github:terraform_pr -- "destroy" "default" "//gcp:gcp"
