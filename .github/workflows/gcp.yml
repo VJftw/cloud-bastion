@@ -19,6 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+
       - id: 'gcp-auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'
@@ -28,7 +31,10 @@ jobs:
           service_account: 'gha-pr-vjftw-bastion@vjp-github-actions.iam.gserviceaccount.com'
 
       - name: Create infrastructure
-        run: ./pleasew run ///third_party/terraform/org-infra//build/github:terraform_apply -- "//gcp:gcp"
+        if: success() && steps.findPr.outputs.number
+        env:
+          PR: ${{ steps.findPr.outputs.pr }}
+        run: ./pleasew run //build/github:terraform_pr -- "apply" "pr-${PR}" "//gcp:gcp"
 
       - name: Create Tunnel
         run: |-
@@ -46,5 +52,8 @@ jobs:
         run: ./pleasew run //gcp/tunnel:tunnel -- cleanup
 
       - name: Destroy infrastructure
-        run: ./pleasew run //gcp:gcp_destroy -- --force
+        if: success() && steps.findPr.outputs.number
+        env:
+          PR: ${{ steps.findPr.outputs.pr }}
+        run: ./pleasew run //build/github:terraform_pr -- "destroy" "pr-${PR}" "//gcp:gcp"
       
