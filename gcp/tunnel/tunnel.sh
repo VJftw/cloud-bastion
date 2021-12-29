@@ -84,7 +84,7 @@ function cleanup {
 }
 
 function ensure {
-    project="$(./pleasew run //gcp:gcp -- "terraform init && terraform output -raw project_id" | tail -n1)"
+    project="$(./pleasew run //gcp/project:project -- "terraform init && terraform output -raw project_id" | tail -n1)"
     cluster_name="$(./pleasew run //gcp:gcp -- "terraform output -raw cluster_name" | tail -n1)"
     region="$(./pleasew run //gcp:gcp -- "terraform output -raw region" | tail -n1)"
     util::info "tunneling to '$cluster_name' in '$region' in '$project'"
