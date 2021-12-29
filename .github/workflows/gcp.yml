@@ -30,18 +30,21 @@ jobs:
       - name: Create infrastructure
         run: ./pleasew run ///third_party/terraform/org-infra//build/github:terraform_apply -- "//gcp:gcp"
 
-      - id: 'gcloud'
-        name: Make gcloud use SA credentials file
-        # This is needed for the gcloud compute ssh command to determine the user identity.
-        run: gcloud auth login --brief --cred-file="${{ steps.gcp-auth.outputs.credentials_file_path }}"
-
       - name: Create Tunnel
-        run: ./pleasew run //gcp/tunnel:tunnel -- ensure
+        run: |-
+          # This is needed for the gcloud compute ssh command to determine the user identity.
+          gcloud auth login --brief --cred-file="${{ steps.gcp-auth.outputs.credentials_file_path }}"
+
+          ./pleasew run //gcp/tunnel:tunnel -- ensure
 
       - name: Test kubectl
         run: ./pleasew run //gcp/tunnel:test
 
-      # # cleanup
-      # - run: ./pleasew run //gcp:gcp_destroy -- -force
-      #   if: always()
+      # cleanup
+      - name: Cleanup Tunnel
+        if: always()
+        run: ./pleasew run //gcp/tunnel:tunnel -- cleanup
+
+      - name: Destroy infrastructure
+        run: ./pleasew run //gcp:gcp_destroy -- --force
       
