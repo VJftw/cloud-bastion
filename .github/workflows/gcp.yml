@@ -39,7 +39,7 @@ jobs:
         env:
           PR: ${{ steps.findPr.outputs.pr }}
         run: |-
-          ./pleasew run //build/github:terraform_pr -- "apply" "pr-${PR}" "//gcp/project:project"
+          ./pleasew run //build/github:terraform_pr -- "apply" "pr" "//gcp/project:project"
           ./pleasew run //build/github:terraform_pr -- "apply" "pr-${PR}" "//gcp:gcp"
 
       - name: Create Tunnel

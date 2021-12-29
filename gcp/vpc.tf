@@ -1,7 +1,7 @@
 resource "google_compute_network" "main" {
   project = local.project_id
 
-  name                            = "main"
+  name                            = "main${local.suffix}"
   auto_create_subnetworks         = false
   routing_mode                    = "REGIONAL"
   delete_default_routes_on_create = true

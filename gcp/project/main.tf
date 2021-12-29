@@ -8,7 +8,7 @@ terraform {
 }
 
 locals {
-  project_id = terraform.workspace == "default" ? "secure-gke" : "secure-gke-${terraform.workspace}"
+  project_id = terraform.workspace == "default" ? "secure-gke" : "secure-gke-pr"
 }
 
 module "project" {

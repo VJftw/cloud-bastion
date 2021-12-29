@@ -1,7 +1,7 @@
 resource "google_compute_router" "internet" {
   project = local.project_id
 
-  name    = "internet"
+  name    = "internet${local.suffix}"
   region  = google_compute_subnetwork.subnetwork["public"].region
   network = google_compute_network.main.id
 
@@ -13,7 +13,7 @@ resource "google_compute_router" "internet" {
 resource "google_compute_router_nat" "internet" {
   project = local.project_id
 
-  name                   = "internet"
+  name                   = "internet${local.suffix}"
   router                 = google_compute_router.internet.name
   region                 = google_compute_router.internet.region
   nat_ip_allocate_option = "AUTO_ONLY"

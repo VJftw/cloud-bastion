@@ -1,10 +1,10 @@
 resource "google_compute_instance_template" "bastion" {
   project = local.project_id
 
-  name_prefix        = "bastion"
+  name_prefix        = "bastion${local.suffix}"
   description = "This template is used to create bastion instances."
 
-  tags = ["bastion"]
+  tags = ["bastion", "${local.suffix}"]
 
   instance_description = "bastion instances"
   machine_type         = "e2-micro"
@@ -54,7 +54,7 @@ resource "google_compute_firewall" "bastion_iap_ssh" {
 resource "google_compute_target_pool" "bastion" {
   project = local.project_id
 
-  name = "bastion"
+  name = "bastion${local.suffix}"
 
   region = local.region
 }
@@ -62,7 +62,7 @@ resource "google_compute_target_pool" "bastion" {
 resource "google_compute_region_instance_group_manager" "bastion" {
   project = local.project_id
 
-  name = "bastion"
+  name = "bastion${local.suffix}"
 
   base_instance_name = "bastion"
   region             = local.region
@@ -83,7 +83,7 @@ resource "google_compute_region_instance_group_manager" "bastion" {
 resource "google_compute_health_check" "bastion" {
   project = local.project_id
 
-  name = "bastion"
+  name = "bastion${local.suffix}"
 
   check_interval_sec  = 6
   timeout_sec         = 5

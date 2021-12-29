@@ -14,7 +14,7 @@ resource "google_project_service" "container" {
 resource "google_container_cluster" "primary" {
   project = local.project_id
 
-  name     = "primary"
+  name     = "cluster${local.suffix}"
   location = local.region
 
   network    = google_compute_network.main.self_link
@@ -90,14 +90,14 @@ resource "google_compute_firewall" "gke_allow_egress_to_master" {
 resource "google_service_account" "primary" {
   project = local.project_id
 
-  account_id   = "primary-nodes"
+  account_id   = "primary-nodes${local.suffix}"
   display_name = "primary nodes in ${google_container_cluster.primary.name}"
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   project = local.project_id
 
-  name       = "primary"
+  name       = "primary${local.suffix}"
   location   = local.region
   cluster    = google_container_cluster.primary.name
   node_count = 1
