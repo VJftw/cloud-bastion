@@ -31,7 +31,8 @@ jobs:
         run: ./pleasew run ///third_party/terraform/org-infra//build/github:terraform_apply -- "//gcp:gcp"
 
       - id: 'gcloud'
-        name: 'gcloud'
+        name: Make gcloud use SA credentials file
+        # This is needed for the gcloud compute ssh command to determine the user identity.
         run: gcloud auth login --brief --cred-file="${{ steps.gcp-auth.outputs.credentials_file_path }}"
 
       - name: Create Tunnel
