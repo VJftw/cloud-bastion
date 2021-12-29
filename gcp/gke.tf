@@ -4,6 +4,11 @@ resource "google_project_service" "container" {
   service = "container.googleapis.com"
 
   disable_dependent_services = true
+
+  // wait 30s to ensure container.googleapis.com is enabled.
+  provisioner "local-exec" {
+    command = "sleep 30"
+  }
 }
 
 resource "google_container_cluster" "primary" {
