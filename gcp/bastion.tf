@@ -4,7 +4,7 @@ resource "google_compute_instance_template" "bastion" {
   name_prefix        = "bastion${local.suffix}"
   description = "This template is used to create bastion instances."
 
-  tags = ["bastion", "${local.suffix}"]
+  tags = ["bastion"]
 
   instance_description = "bastion instances"
   machine_type         = "e2-micro"
