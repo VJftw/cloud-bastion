@@ -58,7 +58,7 @@ function ensureKubeConfig {
     gcloud container clusters get-credentials \
         "$cluster_name" \
         --internal-ip \
-        --project "${project}"
+        --project "${project}" \
         --region "${region}"
 
     # enable proxy
