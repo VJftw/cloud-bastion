@@ -5,6 +5,6 @@ sh_script(
     main = "please.sh",
     visibility = ["PUBLIC"],
     deps = [
-        "//build/util:util",
+        "//build/util",
     ],
 )

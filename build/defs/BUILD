@@ -4,3 +4,9 @@ for build_def in glob(["**.build_defs"]):
         src = build_def,
         visibility = ["PUBLIC"],
     )
+
+export_file(
+    name = "terraform",
+    src = "///third_party/terraform/org-infra//build/defs:terraform",
+    visibility = ["PUBLIC"],
+)

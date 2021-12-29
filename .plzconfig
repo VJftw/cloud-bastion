@@ -7,3 +7,7 @@
 ; when you change it all users will automatically get updated.
 [please]
 version = 16.17.1
+
+[buildconfig]
+terraform-plz-tool = //third_party/defs:terraform_tool
+terraform-default-toolchain = //third_party/terraform:1_1

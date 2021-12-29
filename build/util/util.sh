@@ -42,7 +42,23 @@ util::rsuccess() {
 }
 
 util::retry() {
-  "${@}" || sleep 1; "${@}" || sleep 5; "${@}"
+  if "${@}"; then
+    return
+  fi
+  
+  sleep 1
+  if "${@}"; then
+    return
+  fi
+
+  sleep 5
+  if "${@}"; then
+    return
+  fi
+  
+  util::error "could not execute: ${*}"
+
+  return 1
 }
 
 util::prompt() {
