@@ -55,6 +55,8 @@ util::retry() {
   if "${@}"; then
     return
   fi
+
+  return 1
 }
 
 util::prompt() {

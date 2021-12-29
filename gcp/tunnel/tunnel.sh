@@ -89,7 +89,9 @@ function ensure {
     region="$(./pleasew run //gcp:gcp -- "terraform output -raw region" | tail -n1)"
     util::info "tunneling to '$cluster_name' in '$region' in '$project'"
 
-    util::retry ensureTunnel "$project"
+    if ! util::retry ensureTunnel "$project"; then
+        cat "$log_file"
+    fi
 
     ensureKubeConfig "$project" "$region" "$cluster_name"
 }
