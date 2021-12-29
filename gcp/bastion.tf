@@ -1,7 +1,7 @@
 resource "google_compute_instance_template" "bastion" {
   project = local.project_id
 
-  name_prefix        = "bastion${local.suffix}"
+  name_prefix = "bastion${local.suffix}"
   description = "This template is used to create bastion instances."
 
   tags = ["bastion"]

@@ -28,10 +28,10 @@ resource "google_compute_router_nat" "internet" {
 resource "google_compute_route" "internet" {
   project = local.project_id
 
-  name = "internet"
+  name    = "internet"
   network = google_compute_network.main.id
 
-  dest_range = "0.0.0.0/0"
+  dest_range       = "0.0.0.0/0"
   next_hop_gateway = "default-internet-gateway"
 }
 
@@ -44,7 +44,7 @@ resource "google_compute_firewall" "nat_allow_internet_egress" {
 
   allow {
     protocol = "tcp"
-    ports = ["443"]
+    ports    = ["443"]
   }
 
   destination_ranges = ["0.0.0.0/0"]

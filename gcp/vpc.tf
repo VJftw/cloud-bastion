@@ -11,11 +11,11 @@ locals {
   region = "europe-west1"
   subnetworks = {
     "public" = {
-      "cidr_block" = "10.0.1.0/24"
+      "cidr_block"               = "10.0.1.0/24"
       "private_ip_google_access" = true
     },
     "private" = {
-      "cidr_block" = "10.0.8.0/21"
+      "cidr_block"               = "10.0.8.0/21"
       "private_ip_google_access" = true
     },
   }
@@ -63,7 +63,7 @@ resource "google_compute_firewall" "default_deny_ingress" {
     protocol = "all"
   }
 
-  source_ranges  = ["0.0.0.0/0"]
+  source_ranges = ["0.0.0.0/0"]
 }
 
 # resource "google_compute_firewall" "domain" {

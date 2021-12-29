@@ -55,9 +55,9 @@ resource "google_container_cluster" "primary" {
 
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block = google_compute_subnetwork.subnetwork["public"].ip_cidr_range
-      display_name = "public subnetwork"  
-    } 
+      cidr_block   = google_compute_subnetwork.subnetwork["public"].ip_cidr_range
+      display_name = "public subnetwork"
+    }
   }
 
   # We can't create a cluster with no node pool defined, but we want to only use
