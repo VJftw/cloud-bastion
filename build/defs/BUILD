@@ -10,3 +10,9 @@ export_file(
     src = "///third_party/terraform/org-infra//build/defs:terraform",
     visibility = ["PUBLIC"],
 )
+
+export_file(
+    name = "sh",
+    src = "///third_party/terraform/org-infra//build/defs:sh",
+    visibility = ["PUBLIC"],
+)

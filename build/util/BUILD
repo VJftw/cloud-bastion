@@ -1,10 +1,19 @@
-subinclude("//build/defs:sh")
-
-sh_script(
+export_file(
     name = "util",
-    main = "util.sh",
+    src = "///third_party/terraform/org-infra//build/util",
     visibility = ["PUBLIC"],
-    deps = [
-        "//third_party/sh:ansi",
-    ],
+)
+
+sh_cmd(
+    name = "_lint_all",
+    cmd = """
+./pleasew run sequential ///third_party/terraform/org-infra//build/lint:all
+    """,
+)
+
+sh_cmd(
+    name = "_fmt_all",
+    cmd = """
+./pleasew run sequential ///third_party/terraform/org-infra//build/fmt:all
+    """,
 )

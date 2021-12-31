@@ -9,5 +9,5 @@ terraform_toolchain(
 github_repo(
     name = "org-infra",
     repo = "VJftw/org-infra",
-    revision = "6f393f2cbf64a4536c289eeaa1b9e7f7ae9c7e27",
+    revision = "a9dc09f59b31aec644df101828d6d6024e48e957",
 )

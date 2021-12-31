@@ -8,5 +8,5 @@ terraform_root(
     modules = [
         "///third_party/terraform/org-infra//modules/account/gcp:gcp",
     ],
-    remote_state_bucket = "vjp-sandbox-terraform-state"
+    remote_state_bucket = "vjp-sandbox-terraform-state",
 )
