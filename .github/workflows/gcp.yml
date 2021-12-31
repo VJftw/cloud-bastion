@@ -51,12 +51,12 @@ jobs:
         env:
           PR: ${{ needs.current_pr.outputs.pr }}
         run: |-
-          ./pleasew -p -v2 run //build/ci/github:terraform_workspace -- \
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
             apply \
             --workspace_name="pr" \
             --please_target="//gcp/project:project"
 
-          ./pleasew -p -v2 run //build/ci/github:terraform_workspace -- \
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
             apply \
             --workspace_name="pr-${PR}" \
             --please_target="//gcp:gcp"
@@ -81,7 +81,7 @@ jobs:
         env:
           PR: ${{ needs.current_pr.outputs.pr }}
         run: |-
-          ./pleasew -p -v2 run //build/ci/github:terraform_workspace -- \
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
             destroy \
             --workspace_name="pr-${PR}" \
             --please_target="//gcp:gcp"
@@ -108,12 +108,12 @@ jobs:
       - name: Create infrastructure
         if: success()
         run: |-
-          ./pleasew -p -v2 run //build/ci/github:terraform_workspace -- \
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
             apply \
             --workspace_name="default" \
             --please_target="//gcp/project:project"
         
-          ./pleasew -p -v2 run //build/ci/github:terraform_workspace -- \
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
             apply \
             --workspace_name="default" \
             --please_target="//gcp:gcp"
@@ -136,7 +136,7 @@ jobs:
       - name: Destroy infrastructure
         if: success()
         run: |-
-          ./pleasew -p -v2 run //build/ci/github:terraform_workspace -- \
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
             destroy \
             --workspace_name="default" \
             --please_target="//gcp:gcp"
