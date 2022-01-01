@@ -51,8 +51,15 @@ jobs:
         env:
           PR: ${{ needs.current_pr.outputs.pr }}
         run: |-
-          ./pleasew run //build/github:terraform_pr -- "apply" "pr" "//gcp/project:project"
-          ./pleasew run //build/github:terraform_pr -- "apply" "pr-${PR}" "//gcp:gcp"
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
+            apply \
+            --workspace_name="pr" \
+            --please_target="//gcp/project:project"
+
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
+            apply \
+            --workspace_name="pr-${PR}" \
+            --please_target="//gcp:gcp"
 
       - name: Create Tunnel
         run: |-
@@ -73,7 +80,11 @@ jobs:
         if: success() && needs.current_pr.outputs.pr
         env:
           PR: ${{ needs.current_pr.outputs.pr }}
-        run: ./pleasew run //build/github:terraform_pr -- "destroy" "pr-${PR}" "//gcp:gcp"
+        run: |-
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
+            destroy \
+            --workspace_name="pr-${PR}" \
+            --please_target="//gcp:gcp"
       
   gcp_main:
     if: github.ref == 'refs/heads/main'
@@ -97,8 +108,15 @@ jobs:
       - name: Create infrastructure
         if: success()
         run: |-
-          ./pleasew run //build/github:terraform_pr -- "apply" "default" "//gcp/project:project"
-          ./pleasew run //build/github:terraform_pr -- "apply" "default" "//gcp:gcp"
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
+            apply \
+            --workspace_name="default" \
+            --please_target="//gcp/project:project"
+        
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
+            apply \
+            --workspace_name="default" \
+            --please_target="//gcp:gcp"
 
       - name: Create Tunnel
         run: |-
@@ -117,4 +135,8 @@ jobs:
 
       - name: Destroy infrastructure
         if: success()
-        run: ./pleasew run //build/github:terraform_pr -- "destroy" "default" "//gcp:gcp"
+        run: |-
+          ./pleasew -p -v2 run ///third_party/terraform/org-infra//build/ci/github:terraform_workspace -- \
+            destroy \
+            --workspace_name="default" \
+            --please_target="//gcp:gcp"
