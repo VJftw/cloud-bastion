@@ -30,12 +30,15 @@ function ensureTunnel {
     bastion_zone="$(echo "$bastion" | cut -f2 -d,)"
 
     util::info "creating socks tunnel over SSH on ${socks_address} to ${bastion_name}"
-    util::debug gcloud --verbosity=info compute ssh \
-        --tunnel-through-iap \
-        --project "${project}" \
-        --zone "${bastion_zone}" \
-        "${bastion_name}" \
-        -- -N -p 22 -D "${socks_address}" &> "${log_file}" &
+    util::debug autossh \
+        -o "ProxyCommand gcloud compute --project ${project} ssh --zone ${bastion_zone} --tunnel-through-iap" \
+        -N -p 22 -D "$socks_address"
+    # util::debug gcloud --verbosity=info compute ssh \
+    #     --tunnel-through-iap \
+    #     --project "${project}" \
+    #     --zone "${bastion_zone}" \
+    #     "${bastion_name}" \
+    #     -- -N -p 22 -D "${socks_address}" &> "${log_file}" &
     tunnel_pid="$!"
     echo "$tunnel_pid" > "$pid_file"
 
